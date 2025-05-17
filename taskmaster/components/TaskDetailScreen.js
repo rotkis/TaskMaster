@@ -1,153 +1,112 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
-  Image,
-  TouchableOpacity,
+  TouchableHighlight,
   Alert,
 } from "react-native";
-import { Button, Card, IconButton } from "react-native-paper";
-import * as Haptics from "expo-haptics";
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
-import firebase from "../config/config"; // Importe a configuração do Firebase
+import firebase from "../config/config";
 
-export default function TaskDetailScreen({ route, navigation }) {
-  const { task = {} } = route.params; // Recebe a tarefa passada pela navegação
-  const [completed, setCompleted] = useState(task.completed);
-  const [imageUri, setImageUri] = useState(task.imageUri || null);
+class TaskDetailScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    const task = props.route.params?.task || {};
+    this.state = {
+      id: task.id || null,
+      title: task.title || "",
+      description: task.description || "",
+      dueDate: task.dueDate || "",
+    };
+  }
 
-  // Atualiza o status da tarefa no Firebase e vibra ao concluir
-  const toggleComplete = async () => {
-    if (!task.id) {
-      // Se for nova tarefa
-      Alert.alert("Aviso", "Salve a tarefa primeiro!");
+  handleSave = () => {
+    if (!this.state.title) {
+      Alert.alert("Atenção", "Preencha o título da tarefa");
       return;
     }
-    try {
-      const taskRef = doc(firebase, "tasks", task.id);
-      await updateDoc(taskRef, { completed: !completed });
-      setCompleted(!completed);
-      if (!completed) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert("🎉 Parabéns!", `Você ganhou ${task.points} pontos!`);
-      }
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível atualizar a tarefa.");
-    }
-  };
-  const handleSave = async () => {
-    try {
-      const newTaskRef = await addDoc(collection(firebase, "tasks"), {
-        title: "Nova Tarefa",
-        completed: false,
-        userId: "user123",
-      });
-      navigation.navigate("TaskDetail", {
-        task: { id: newTaskRef.id, ...newTaskRef.data() },
-      });
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível criar a tarefa.");
-    }
-  };
-  // Deleta a tarefa
-  const handleDelete = async () => {
-    try {
-      await deleteDoc(doc(firebase, "tasks", task.id));
-      navigation.goBack(); // Volta para a tela anterior após deletar
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível deletar a tarefa.");
-    }
+
+    const taskRef = this.state.id
+      ? firebase.database().ref(`/tasks/${this.state.id}`)
+      : firebase.database().ref("/tasks").push();
+
+    taskRef
+      .set({
+        title: this.state.title,
+        description: this.state.description,
+        dueDate: this.state.dueDate,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+      })
+      .then(() => {
+        Alert.alert("Sucesso!", "Tarefa salva com sucesso!");
+        this.props.navigation.goBack();
+      })
+      .catch((error) => Alert.alert("Erro", error.message));
   };
 
-  return (
-    <View style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Title
-          title={task.title}
-          subtitle={`${task.points} pontos`}
-          right={() => (
-            <IconButton
-              icon={completed ? "check-circle" : "circle-outline"}
-              color={completed ? "#4CAF50" : "#757575"}
-              onPress={toggleComplete}
-            />
-          )}
+  render() {
+    return (
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          placeholder="Título da Tarefa"
+          value={this.state.title}
+          onChangeText={(text) => this.setState({ title: text })}
         />
 
-        <Card.Content>
-          <Text style={styles.description}>
-            {task.description || "Nenhuma descrição fornecida."}
+        <TextInput
+          style={[styles.input, styles.multiline]}
+          placeholder="Descrição"
+          multiline
+          value={this.state.description}
+          onChangeText={(text) => this.setState({ description: text })}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Data Limite (DD/MM/AAAA)"
+          value={this.state.dueDate}
+          onChangeText={(text) => this.setState({ dueDate: text })}
+        />
+
+        <TouchableHighlight style={styles.saveButton} onPress={this.handleSave}>
+          <Text style={styles.buttonText}>
+            {this.state.id ? "Atualizar" : "Salvar"}
           </Text>
-
-          {/* Exibe a imagem da tarefa (se existir) */}
-          {imageUri && (
-            <Image
-              source={{ uri: imageUri }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          )}
-
-          <Text style={styles.date}>
-            📅 Prazo: {task.dueDate || "Sem prazo definido"}
-          </Text>
-        </Card.Content>
-
-        <Card.Actions style={styles.actions}>
-          <Button
-            mode="contained"
-            onPress={toggleComplete}
-            style={styles.button}
-          >
-            {completed ? "Desmarcar" : "Concluir"}
-          </Button>
-
-          <Button
-            mode="outlined"
-            onPress={handleDelete}
-            style={styles.button}
-            textColor="#FF3D00"
-          >
-            Deletar
-          </Button>
-        </Card.Actions>
-      </Card>
-    </View>
-  );
+        </TouchableHighlight>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
+    padding: 20,
   },
-  card: {
-    marginBottom: 16,
-  },
-  description: {
-    fontSize: 16,
-    marginVertical: 8,
-    color: "#424242",
-  },
-  image: {
-    width: "100%",
-    height: 200,
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 15,
+    marginBottom: 15,
     borderRadius: 8,
-    marginVertical: 12,
+    fontSize: 16,
   },
-  date: {
-    fontSize: 14,
-    color: "#616161",
-    marginTop: 8,
+  multiline: {
+    height: 100,
+    textAlignVertical: "top",
   },
-  actions: {
-    justifyContent: "space-between",
-    marginTop: 8,
+  saveButton: {
+    backgroundColor: "#2196F3",
+    padding: 15,
+    borderRadius: 8,
   },
-  button: {
-    marginHorizontal: 4,
-    flex: 1,
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    textAlign: "center",
   },
 });
+
+export default TaskDetailScreen;
