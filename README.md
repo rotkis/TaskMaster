@@ -32,7 +32,7 @@ Aplicativo de gerenciamento de tarefas com sistema de recompensas e autenticaç�
 
 https://snack.expo.dev/@rotkis/taskmasterr
 
-## Fotos 
+## Fotos 📷
 
 ![2025-05-21-175450_hyprshot](https://github.com/user-attachments/assets/42825281-26fe-42c3-9268-5f80169d21b5)
 
@@ -44,3 +44,35 @@ https://snack.expo.dev/@rotkis/taskmasterr
 
 ![2025-05-21-175646_hyprshot](https://github.com/user-attachments/assets/c46e37b8-7ea5-4ca0-a6fb-cff64a1c3858)
 
+## Uso Básico 📱
+
+1. **Iniciar o aplicativo**
+   - Execute o app através do Expo
+   - Escolha entre login ou cadastro
+
+2. **Criar nova conta**
+   - Toque na aba "Cadastro"
+   - Preencha e-mail e senha
+   - Confirme a senha
+   - Toque em "Criar Conta"
+
+3. **Adicionar tarefas**
+   - Toque no botão ➕ flutuante
+   - Digite título e descrição
+   - Defina os pontos de recompensa
+   - Toque em "Salvar Tarefa"
+
+4. **Gerenciar tarefas**
+   - ✔️ Toque no ícone para marcar como completa
+   - ✏️ Toque na tarefa para editar
+   - 🗑️ toque na lixeira para excluir
+
+5. **Acompanhar progresso**
+   - Visualize pontos acumulados no topo
+   - Veja histórico de conclusão nas tarefas
+   - Atualizações em tempo real
+
+6. **Navegação geral**
+   - Use a barra inferior para login/cadastro
+   - Toque no ícone de perfil 👤
+   - Recarregue puxando a lista para baixo
