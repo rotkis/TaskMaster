@@ -1,33 +1,43 @@
-import * as React from 'react';
-import { Text, View, TextInput, Alert, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack';
-import firebase from './config/config';
-import HomeScreen from './components/HomeScreen';
-import TaskDetailScreen from './components/TaskDetailScreen';
+import * as React from "react";
+import {
+  Text,
+  View,
+  TextInput,
+  Alert,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { createStackNavigator } from "@react-navigation/stack";
+import firebase from "./config/config";
+import HomeScreen from "./components/HomeScreen";
+import TaskDetailScreen from "./components/TaskDetailScreen";
 
 const NavegacaoPrincipal = createBottomTabNavigator();
 const NavegacaoStack = createStackNavigator();
 
 // Cores do tema
 const colors = {
-  primary: '#2A2D43',
-  secondary: '#FF6B6B',
-  background: '#F7FFF7',
-  text: '#2A2D43',
-  white: '#FFFFFF',
+  primary: "#2A2D43",
+  secondary: "#FF6B6B",
+  background: "#F7FFF7",
+  text: "#2A2D43",
+  white: "#FFFFFF",
 };
 
 function MainAppStack() {
   const Stack = createStackNavigator();
   return (
-    <Stack.Navigator 
-      screenOptions={{ 
+    <Stack.Navigator
+      screenOptions={{
         headerShown: false,
-        cardStyle: { backgroundColor: colors.background }
-      }}>
+        cardStyle: { backgroundColor: colors.background },
+      }}
+    >
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="TaskDetail" component={TaskDetailScreen} />
     </Stack.Navigator>
@@ -71,9 +81,10 @@ class NavTab extends React.Component {
           },
           tabBarLabelStyle: {
             fontSize: 12,
-            fontWeight: '600',
+            fontWeight: "600",
           },
-        }}>
+        }}
+      >
         <NavegacaoPrincipal.Screen
           name="Login"
           component={Principal}
@@ -88,7 +99,11 @@ class NavTab extends React.Component {
           component={Cadastro}
           options={{
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="account-plus" size={24} color={color} />
+              <MaterialCommunityIcons
+                name="account-plus"
+                size={24}
+                color={color}
+              />
             ),
           }}
         />
@@ -99,21 +114,22 @@ class NavTab extends React.Component {
 
 class Principal extends React.Component {
   state = {
-    usuario: '',
-    senha: '',
+    usuario: "",
+    senha: "",
   };
 
   ler = () => {
     const { usuario, senha } = this.state;
     if (!usuario || !senha) {
-      Alert.alert('Atenção', 'Preencha todos os campos');
+      Alert.alert("Atenção", "Preencha todos os campos");
       return;
     }
 
-    firebase.auth()
+    firebase
+      .auth()
       .signInWithEmailAndPassword(usuario.toLowerCase(), senha)
       .then(() => {
-        this.props.navigation.replace('MainApp');
+        this.props.navigation.replace("MainApp");
       })
       .catch((error) => {
         this.handleAuthError(error);
@@ -123,24 +139,25 @@ class Principal extends React.Component {
   handleAuthError = (error) => {
     const errorCode = error.code;
     const errors = {
-      'auth/invalid-email': 'Email inválido',
-      'auth/user-not-found': 'Usuário não encontrado',
-      'auth/wrong-password': 'Senha incorreta',
-      'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde',
+      "auth/invalid-email": "Email inválido",
+      "auth/user-not-found": "Usuário não encontrado",
+      "auth/wrong-password": "Senha incorreta",
+      "auth/too-many-requests": "Muitas tentativas. Tente mais tarde",
     };
-    Alert.alert('Erro', errors[errorCode] || 'Erro ao fazer login');
+    Alert.alert("Erro", errors[errorCode] || "Erro ao fazer login");
   };
 
   render() {
     return (
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={estilos.container}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={estilos.header}>
-          <MaterialCommunityIcons 
-            name="shield-account" 
-            size={80} 
-            color={colors.primary} 
+          <MaterialCommunityIcons
+            name="shield-account"
+            size={80}
+            color={colors.primary}
           />
           <Text style={estilos.titulo}>Bem-vindo de volta</Text>
           <Text style={estilos.subtitulo}>Faça login para continuar</Text>
@@ -154,7 +171,7 @@ class Principal extends React.Component {
             autoCapitalize="none"
             keyboardType="email-address"
             value={this.state.usuario}
-            onChangeText={usuario => this.setState({ usuario })}
+            onChangeText={(usuario) => this.setState({ usuario })}
           />
 
           <TextInput
@@ -163,18 +180,17 @@ class Principal extends React.Component {
             placeholderTextColor="#888"
             secureTextEntry
             value={this.state.senha}
-            onChangeText={senha => this.setState({ senha })}
+            onChangeText={(senha) => this.setState({ senha })}
           />
 
-          <TouchableOpacity
-            style={estilos.botaoPrimario}
-            onPress={this.ler}>
+          <TouchableOpacity style={estilos.botaoPrimario} onPress={this.ler}>
             <Text style={estilos.textoBotao}>Entrar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={estilos.linkContainer}
-            onPress={() => this.props.navigation.navigate('Cadastro')}>
+            onPress={() => this.props.navigation.navigate("Cadastro")}
+          >
             <Text style={estilos.texto}>Não tem conta? </Text>
             <Text style={estilos.linkTexto}>Cadastre-se</Text>
           </TouchableOpacity>
@@ -186,24 +202,25 @@ class Principal extends React.Component {
 
 class Cadastro extends React.Component {
   state = {
-    user: '',
-    password: '',
-    confirmPassword: '',
+    user: "",
+    password: "",
+    confirmPassword: "",
   };
 
   gravar = () => {
     const { user, password, confirmPassword } = this.state;
-    
+
     if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem');
+      Alert.alert("Erro", "As senhas não coincidem");
       return;
     }
 
-    firebase.auth()
+    firebase
+      .auth()
       .createUserWithEmailAndPassword(user.toLowerCase(), password)
       .then(() => {
-        Alert.alert('Sucesso', 'Conta criada com sucesso!');
-        this.props.navigation.navigate('Login');
+        Alert.alert("Sucesso", "Conta criada com sucesso!");
+        this.props.navigation.navigate("Login");
       })
       .catch((error) => {
         this.handleSignupError(error);
@@ -213,23 +230,24 @@ class Cadastro extends React.Component {
   handleSignupError = (error) => {
     const errorCode = error.code;
     const errors = {
-      'auth/email-already-in-use': 'Email já cadastrado',
-      'auth/weak-password': 'Senha deve ter pelo menos 6 caracteres',
-      'auth/invalid-email': 'Email inválido',
+      "auth/email-already-in-use": "Email já cadastrado",
+      "auth/weak-password": "Senha deve ter pelo menos 6 caracteres",
+      "auth/invalid-email": "Email inválido",
     };
-    Alert.alert('Erro', errors[errorCode] || 'Erro ao cadastrar');
+    Alert.alert("Erro", errors[errorCode] || "Erro ao cadastrar");
   };
 
   render() {
     return (
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={estilos.container}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={estilos.header}>
-          <MaterialCommunityIcons 
-            name="account-plus" 
-            size={80} 
-            color={colors.primary} 
+          <MaterialCommunityIcons
+            name="account-plus"
+            size={80}
+            color={colors.primary}
           />
           <Text style={estilos.titulo}>Crie sua conta</Text>
           <Text style={estilos.subtitulo}>Preencha os dados abaixo</Text>
@@ -243,7 +261,7 @@ class Cadastro extends React.Component {
             autoCapitalize="none"
             keyboardType="email-address"
             value={this.state.user}
-            onChangeText={user => this.setState({ user })}
+            onChangeText={(user) => this.setState({ user })}
           />
 
           <TextInput
@@ -252,7 +270,7 @@ class Cadastro extends React.Component {
             placeholderTextColor="#888"
             secureTextEntry
             value={this.state.password}
-            onChangeText={password => this.setState({ password })}
+            onChangeText={(password) => this.setState({ password })}
           />
 
           <TextInput
@@ -261,18 +279,19 @@ class Cadastro extends React.Component {
             placeholderTextColor="#888"
             secureTextEntry
             value={this.state.confirmPassword}
-            onChangeText={confirmPassword => this.setState({ confirmPassword })}
+            onChangeText={(confirmPassword) =>
+              this.setState({ confirmPassword })
+            }
           />
 
-          <TouchableOpacity
-            style={estilos.botaoPrimario}
-            onPress={this.gravar}>
+          <TouchableOpacity style={estilos.botaoPrimario} onPress={this.gravar}>
             <Text style={estilos.textoBotao}>Criar Conta</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={estilos.linkContainer}
-            onPress={() => this.props.navigation.navigate('Login')}>
+            onPress={() => this.props.navigation.navigate("Login")}
+          >
             <Text style={estilos.texto}>Já tem conta? </Text>
             <Text style={estilos.linkTexto}>Faça login</Text>
           </TouchableOpacity>
@@ -290,18 +309,18 @@ const estilos = StyleSheet.create({
     paddingBottom: 40,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 40,
   },
   titulo: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.primary,
     marginTop: 16,
   },
   subtitulo: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginTop: 8,
   },
   formContainer: {
@@ -316,7 +335,7 @@ const estilos = StyleSheet.create({
     marginBottom: 16,
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -330,7 +349,7 @@ const estilos = StyleSheet.create({
     backgroundColor: colors.secondary,
     borderRadius: 12,
     padding: 18,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 8,
     ...Platform.select({
       ios: {
@@ -344,12 +363,12 @@ const estilos = StyleSheet.create({
   textoBotao: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '600',
-    textTransform: 'uppercase',
+    fontWeight: "600",
+    textTransform: "uppercase",
   },
   linkContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 24,
   },
   texto: {
@@ -359,6 +378,6 @@ const estilos = StyleSheet.create({
   linkTexto: {
     color: colors.secondary,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

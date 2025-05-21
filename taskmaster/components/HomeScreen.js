@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -13,21 +13,21 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Keyboard,
-} from 'react-native';
-import firebase from '../config/config';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+} from "react-native";
+import firebase from "../config/config";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 // Paleta de cores moderna
 const colors = {
-  primary: '#6C63FF',
-  secondary: '#FF6584',
-  background: '#F8F9FA',
-  text: '#2D3436',
-  success: '#00B894',
-  warning: '#FDCB6E',
-  white: '#FFFFFF',
-  gray: '#A4A4A4',
-  lightGray: '#E0E0E0',
+  primary: "#6C63FF",
+  secondary: "#FF6584",
+  background: "#F8F9FA",
+  text: "#2D3436",
+  success: "#00B894",
+  warning: "#FDCB6E",
+  white: "#FFFFFF",
+  gray: "#A4A4A4",
+  lightGray: "#E0E0E0",
 };
 
 class HomeScreen extends React.Component {
@@ -49,10 +49,11 @@ class HomeScreen extends React.Component {
         <TouchableHighlight
           onPress={() => {
             Vibration.vibrate(50);
-            this.props.navigation.navigate('Profile');
+            this.props.navigation.navigate("Profile");
           }}
           underlayColor="transparent"
-          style={styles.profileButton}>
+          style={styles.profileButton}
+        >
           <Icon name="account-circle" size={32} color={colors.white} />
         </TouchableHighlight>
       ),
@@ -64,7 +65,7 @@ class HomeScreen extends React.Component {
     if (!userId) return;
 
     this.tasksRef = firebase.database().ref(`/tasks/${userId}`);
-    this.tasksRef.on('value', (snapshot) => {
+    this.tasksRef.on("value", (snapshot) => {
       const tasks = [];
       let total = 0;
 
@@ -82,7 +83,7 @@ class HomeScreen extends React.Component {
 
       // Ordena tarefas: não completadas primeiro
       tasks.sort((a, b) =>
-        a.completed === b.completed ? 0 : a.completed ? 1 : -1
+        a.completed === b.completed ? 0 : a.completed ? 1 : -1,
       );
 
       this.setState(
@@ -91,7 +92,7 @@ class HomeScreen extends React.Component {
           totalPoints: total,
           loading: false,
         },
-        this.animatePoints
+        this.animatePoints,
       );
     });
   };
@@ -147,24 +148,25 @@ class HomeScreen extends React.Component {
           ? firebase.database.ServerValue.TIMESTAMP
           : null,
       })
-      .catch((error) => Alert.alert('Erro', error.message));
+      .catch((error) => Alert.alert("Erro", error.message));
   };
 
+  // No método deleteTask, atualize para:
   deleteTask = (taskId) => {
     Vibration.vibrate(100);
 
     Alert.alert(
-      'Confirmar Exclusão',
-      'Tem certeza que deseja excluir esta tarefa?',
+      "Confirmar Exclusão",
+      "Tem certeza que deseja excluir esta tarefa?",
       [
         {
-          text: 'Cancelar',
-          style: 'cancel',
+          text: "Cancelar",
+          style: "cancel",
           onPress: () => Vibration.vibrate(10),
         },
         {
-          text: 'Excluir',
-          style: 'destructive',
+          text: "Excluir",
+          style: "destructive",
           onPress: () => {
             Vibration.vibrate(50);
             const userId = firebase.auth().currentUser?.uid;
@@ -172,10 +174,14 @@ class HomeScreen extends React.Component {
               .database()
               .ref(`/tasks/${userId}/${taskId}`)
               .remove()
-              .catch((error) => Alert.alert('Erro', error.message));
+              .then(() => {
+                // Forçar atualização do estado após exclusão
+                this.loadTasks();
+              })
+              .catch((error) => Alert.alert("Erro", error.message));
           },
         },
-      ]
+      ],
     );
   };
 
@@ -184,22 +190,25 @@ class HomeScreen extends React.Component {
       style={[
         styles.itemContainer,
         { transform: [{ scale: this.state.scaleAnim }] },
-      ]}>
+      ]}
+    >
       <TouchableHighlight
         style={[styles.item, item.completed && styles.completedItem]}
         underlayColor={colors.lightGray}
         onPress={() => {
           Vibration.vibrate(10);
-          this.props.navigation.navigate('TaskDetail', {
+          this.props.navigation.navigate("TaskDetail", {
             task: item,
             onGoBack: () => this.loadTasks(),
           });
-        }}>
+        }}
+      >
         <View style={styles.itemContent}>
           <TouchableHighlight
             onPress={() => this.toggleComplete(item.id, item.completed)}
             style={styles.checkButton}
-            underlayColor={colors.lightGray}>
+            underlayColor={colors.lightGray}
+          >
             <View style={styles.checkContainer}>
               {item.completed ? (
                 <Icon name="check-circle" size={28} color={colors.success} />
@@ -212,7 +221,8 @@ class HomeScreen extends React.Component {
           <View style={styles.taskInfo}>
             <Text
               numberOfLines={2}
-              style={[styles.title, item.completed && styles.completedText]}>
+              style={[styles.title, item.completed && styles.completedText]}
+            >
               {item.title}
             </Text>
 
@@ -222,7 +232,8 @@ class HomeScreen extends React.Component {
                 style={[
                   styles.description,
                   item.completed && styles.completedText,
-                ]}>
+                ]}
+              >
                 {item.description}
               </Text>
             ) : null}
@@ -230,7 +241,7 @@ class HomeScreen extends React.Component {
             <View style={styles.taskFooter}>
               <View style={styles.pointsContainer}>
                 <Image
-                  source={require('../assets/coin.png')}
+                  source={require("../assets/coin.png")}
                   style={styles.coinIcon}
                 />
                 <Text style={styles.pointsText}>{item.points}</Text>
@@ -247,7 +258,8 @@ class HomeScreen extends React.Component {
           <TouchableHighlight
             style={styles.deleteButton}
             onPress={() => this.deleteTask(item.id)}
-            underlayColor={colors.lightGray}>
+            underlayColor={colors.lightGray}
+          >
             <Icon name="trash-can-outline" size={24} color={colors.secondary} />
           </TouchableHighlight>
         </View>
@@ -279,9 +291,10 @@ class HomeScreen extends React.Component {
               style={[
                 styles.totalPointsContainer,
                 { transform: [{ scale: this.state.bounceValue }] },
-              ]}>
+              ]}
+            >
               <Image
-                source={require('../assets/coin.png')}
+                source={require("../assets/coin.png")}
                 style={styles.coinIconLarge}
               />
               <Text style={styles.totalPointsText}>
@@ -293,7 +306,8 @@ class HomeScreen extends React.Component {
           {/* Lista */}
           <ScrollView
             contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             <FlatList
               data={this.state.tasks}
               renderItem={this.renderTaskItem}
@@ -321,11 +335,12 @@ class HomeScreen extends React.Component {
             style={styles.addButton}
             onPress={() => {
               Vibration.vibrate(50);
-              this.props.navigation.navigate('TaskDetail', {
+              this.props.navigation.navigate("TaskDetail", {
                 onGoBack: () => this.loadTasks(),
               });
             }}
-            underlayColor={colors.primary}>
+            underlayColor={colors.primary}
+          >
             <View style={styles.addButtonContent}>
               <Icon name="plus" size={24} color={colors.white} />
               <Text style={styles.addText}>Nova Tarefa</Text>
@@ -353,19 +368,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   greetingText: {
-    color: colors.white + 'CC',
+    color: colors.white + "CC",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   headerTitle: {
     color: colors.white,
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 4,
   },
   profileButton: {
@@ -374,9 +389,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   totalPointsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white + '30',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.white + "30",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -384,7 +399,7 @@ const styles = StyleSheet.create({
   totalPointsText: {
     color: colors.white,
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
     marginLeft: 8,
   },
   coinIcon: {
@@ -411,12 +426,12 @@ const styles = StyleSheet.create({
   },
   completedItem: {
     opacity: 0.8,
-    backgroundColor: colors.white + 'CC',
+    backgroundColor: colors.white + "CC",
   },
   itemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   checkButton: {
     borderRadius: 20,
@@ -425,8 +440,8 @@ const styles = StyleSheet.create({
   checkContainer: {
     width: 32,
     height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   uncheckedCircle: {
     width: 24,
@@ -442,7 +457,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   description: {
@@ -451,28 +466,28 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   completedText: {
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
     color: colors.gray,
   },
   taskFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 8,
   },
   pointsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   pointsText: {
     fontSize: 14,
     color: colors.text,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   completedDate: {
     fontSize: 12,
     color: colors.gray,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   deleteButton: {
     padding: 8,
@@ -483,15 +498,15 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   addButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 24,
     right: 24,
     backgroundColor: colors.primary,
     borderRadius: 24,
     paddingVertical: 16,
     paddingHorizontal: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     elevation: 6,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
@@ -499,17 +514,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   addButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   addText: {
     color: colors.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginLeft: 8,
   },
   emptyContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 40,
     padding: 24,
     backgroundColor: colors.white,
@@ -526,18 +541,18 @@ const styles = StyleSheet.create({
   emptyTitle: {
     color: colors.text,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
   },
   emptyText: {
     color: colors.gray,
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
   },
   loadingText: {
