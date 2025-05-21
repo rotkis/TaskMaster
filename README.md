@@ -2,8 +2,6 @@
 
 Aplicativo de gerenciamento de tarefas com sistema de recompensas e autenticação de usuários.
 
-![App Preview](https://via.placeholder.com/800x400.png?text=TaskMaster+Screenshots+Here)
-
 ## Funcionalidades Principais ✨
 
 - 👤 Autenticação de usuário (Login/Cadastro)
@@ -33,3 +31,16 @@ Aplicativo de gerenciamento de tarefas com sistema de recompensas e autenticaç�
 ## Teste ⚙️
 
 https://snack.expo.dev/@rotkis/taskmasterr
+
+## Fotos 
+
+![2025-05-21-175450_hyprshot](https://github.com/user-attachments/assets/42825281-26fe-42c3-9268-5f80169d21b5)
+
+![2025-05-21-175510_hyprshot](https://github.com/user-attachments/assets/01395bfe-ea61-49d4-a457-a2a420fd4b26)
+
+![2025-05-21-175548_hyprshot](https://github.com/user-attachments/assets/54c4b6a8-238c-443c-bc49-780e1086d46b)
+
+![2025-05-21-175607_hyprshot](https://github.com/user-attachments/assets/4f75b24a-94bd-43f4-b66e-726c1cfe2d96)
+
+![2025-05-21-175646_hyprshot](https://github.com/user-attachments/assets/c46e37b8-7ea5-4ca0-a6fb-cff64a1c3858)
+
