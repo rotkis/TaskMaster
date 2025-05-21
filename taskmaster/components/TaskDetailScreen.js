@@ -1,13 +1,14 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableHighlight,
+import React from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  StyleSheet, 
+  TouchableHighlight, 
   Alert,
-} from "react-native";
-import firebase from "../config/config";
+  Vibration // Adicionado
+} from 'react-native';
+import firebase from '../config/config';
 
 class TaskDetailScreen extends React.Component {
   constructor(props) {
@@ -15,35 +16,46 @@ class TaskDetailScreen extends React.Component {
     const task = props.route.params?.task || {};
     this.state = {
       id: task.id || null,
-      title: task.title || "",
-      description: task.description || "",
-      dueDate: task.dueDate || "",
+      title: task.title || '',
+      description: task.description || '',
+      points: task.points || 100,
     };
   }
 
   handleSave = () => {
-    if (!this.state.title) {
-      Alert.alert("Atenção", "Preencha o título da tarefa");
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) {
+      Alert.alert('Erro', 'Usuário não autenticado');
       return;
     }
 
-    const taskRef = this.state.id
-      ? firebase.database().ref(`/tasks/${this.state.id}`)
-      : firebase.database().ref("/tasks").push();
+    if (!this.state.title) {
+      Alert.alert('Atenção', 'Preencha o título da tarefa');
+      return;
+    }
 
-    taskRef
-      .set({
-        title: this.state.title,
-        description: this.state.description,
-        dueDate: this.state.dueDate,
-        createdAt: firebase.database.ServerValue.TIMESTAMP,
-      })
-      .then(() => {
-        Alert.alert("Sucesso!", "Tarefa salva com sucesso!");
-        this.props.navigation.goBack();
-      })
-      .catch((error) => Alert.alert("Erro", error.message));
-  };
+    if (isNaN(this.state.points) || this.state.points < 0) {
+      Alert.alert('Atenção', 'Pontos devem ser um número positivo');
+      return;
+    }
+
+    const taskRef = this.state.id 
+      ? firebase.database().ref(`/tasks/${userId}/${this.state.id}`)
+      : firebase.database().ref(`/tasks/${userId}`).push();
+
+    taskRef.set({
+      title: this.state.title,
+      description: this.state.description,
+      points: Number(this.state.points),
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    })
+    .then(() => {
+      Vibration.vibrate(50); // Vibração ao salvar
+      Alert.alert('Sucesso!', 'Tarefa salva com sucesso!');
+      this.props.navigation.goBack();
+    })
+    .catch(error => Alert.alert('Erro', error.message));
+  }
 
   render() {
     return (
@@ -52,7 +64,7 @@ class TaskDetailScreen extends React.Component {
           style={styles.input}
           placeholder="Título da Tarefa"
           value={this.state.title}
-          onChangeText={(text) => this.setState({ title: text })}
+          onChangeText={text => this.setState({ title: text })}
         />
 
         <TextInput
@@ -60,25 +72,30 @@ class TaskDetailScreen extends React.Component {
           placeholder="Descrição"
           multiline
           value={this.state.description}
-          onChangeText={(text) => this.setState({ description: text })}
+          onChangeText={text => this.setState({ description: text })}
         />
 
         <TextInput
           style={styles.input}
-          placeholder="Data Limite (DD/MM/AAAA)"
-          value={this.state.dueDate}
-          onChangeText={(text) => this.setState({ dueDate: text })}
+          placeholder="Pontos"
+          keyboardType="numeric"
+          value={String(this.state.points)}
+          onChangeText={text => this.setState({ points: text.replace(/[^0-9]/g, '') })}
         />
 
-        <TouchableHighlight style={styles.saveButton} onPress={this.handleSave}>
+        <TouchableHighlight
+          style={styles.saveButton}
+          onPress={this.handleSave}
+        >
           <Text style={styles.buttonText}>
-            {this.state.id ? "Atualizar" : "Salvar"}
+            {this.state.id ? 'Atualizar' : 'Salvar'}
           </Text>
         </TouchableHighlight>
       </View>
     );
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -110,3 +127,4 @@ const styles = StyleSheet.create({
 });
 
 export default TaskDetailScreen;
+
