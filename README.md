@@ -2,6 +2,10 @@
 
 Aplicativo de gerenciamento de tarefas com sistema de recompensas e autenticação de usuários.
 
+## Motivação
+
+A motivação foi fazer um lugar para gerenciar as suas tarefas e ganhar pontos ao executa-las
+
 ## Funcionalidades Principais ✨
 
 - 👤 Autenticação de usuário (Login/Cadastro)
