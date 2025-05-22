@@ -76,3 +76,5 @@ https://snack.expo.dev/@rotkis/taskmasterr
    - Use a barra inferior para login/cadastro
    - Toque no ícone de perfil 👤
    - Recarregue puxando a lista para baixo
+##  
+Feito por: Arthur Carvalho Rotkis
